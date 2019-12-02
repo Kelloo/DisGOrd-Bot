@@ -1,0 +1,26 @@
+{
+  "name": "disgord-bot",
+  "version": "1.0.0",
+  "description": "A bot to enhance Discord's user experience.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/youssefAbobakr/DisGOrd-Bot.git"
+  },
+  "author": "Are you GITting me?",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/youssefAbobakr/DisGOrd-Bot/issues"
+  },
+  "homepage": "https://github.com/youssefAbobakr/DisGOrd-Bot#readme",
+  "dependencies": {
+    "discord.js": "^11.5.1",
+    "dotenv": "^8.2.0",
+    "opusscript": "0.0.7",
+    "spotify-web-api-node": "^4.0.0",
+    "ytdl-core": "^1.0.3"
+  }
+}
