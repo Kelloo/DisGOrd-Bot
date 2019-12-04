@@ -1,2 +1,2 @@
 # DisGOrd-Bot
-A bot to enhance discord user experience
+A bot to enhance Discord's user experience. 
