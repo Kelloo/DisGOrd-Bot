@@ -139,6 +139,40 @@ bot.on('message', async (message) => {
       });
   }
 
+  if (cmd == 'editfav'){
+   
+    if (Favourite.findOne(message.guild.id)){
+     
+     
+      const andrew= await Favourite.findById(message.guild.id)
+      let SongTemp= andrew.songs;
+      
+      for (var i=0;i<SongTemp.length;i++){
+        if (i===parseInt(searchTerm)){
+          SongTemp.splice(i,1);
+        }
+      }
+      console.log("ay &ag");
+      console.log(SongTemp);
+      
+      Favourite.findByIdAndUpdate(message.guild.id,{songs:SongTemp}, { new: true }, (err, model) => {
+        if (!err) {
+          
+        } else {
+          return response.json({ error: `Error, couldn't update a user given the following data` })
+        }
+        
+     
+      // Favourite.findByIdAndUpdate(message.guild.id,{ $push: { ratings: rate } },{new:true},function(err,e){
+      // })
+    })
+    }else{
+      message.channel.send('You dont have a fav');
+  }
+
+  }
+
+
   if (cmd=='fav') {
     function play(connection, message) {
       //function to play song
@@ -155,7 +189,6 @@ bot.on('message', async (message) => {
         }
       });
     }
-
     if (!message.member.voiceChannel) {
       const msg = await message.channel.send(
         'You must be in a voice channel!!'
