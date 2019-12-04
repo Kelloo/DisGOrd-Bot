@@ -5,20 +5,15 @@ const { config } = require('dotenv');
 const ytdl = require('ytdl-core');
 const Spotify = require('node-spotify-api');
 const keys = require('./keys.js');
+const search = require('youtube-search-promise');
 
 const bot = new Client();
 const app = express();
-var servers = {}; //to save all songs in the queue
+var servers = []; //to save all songs in the queue
 var SpotifyWebApi = require('spotify-web-api-node');
 
 config({
   path: __dirname + '/.env'
-});
-
-const spotifyApi = new SpotifyWebApi({
-  clientId: process.env.clientId, //use updated .env file
-  clientSecret: process.env.clientSecret, //use updated .env file
-  redirectUri: process.env.redirectUri //use updated .env file
 });
 
 const spotify = new Spotify(keys.spotify);
@@ -56,10 +51,10 @@ bot.on('message', async (message) => {
       `ahlan ya ${message.author.username}`
     );
   }
-  if (cmd == 'plays') {
+  if (cmd == 'play') {
     function play(connection, message) {
       //function to play song
-      let server = servers[message.guild.id];
+      var server = servers[message.guild.id];
       server.dispatcher = connection.playStream(
         ytdl(server.queue[0], { filter: 'audioonly' })
       );
@@ -82,14 +77,28 @@ bot.on('message', async (message) => {
     if (!servers[message.guild.id]) {
       servers[message.guild.id] = { queue: [] };
     }
-    var server = servers[message.guild.id];
-    server.queue.push('https://www.youtube.com/watch?v=sZgFubTaqWI');
-    if (!message.guild.voiceConnection) {
-      //to make bot join the voice channel
-      message.member.voiceChannel.join().then(function(connection) {
-        play(connection, message);
+
+    var opts = {
+      maxResults: 1,
+      key: process.env.KEY
+    };
+    search(searchTerm, opts)
+      .then((results) => {
+        let song = results[0].link;
+        var server = servers[message.guild.id];
+        server.queue.push(song);
+
+        if (!message.guild.voiceConnection) {
+          //to make bot join the voice channel
+          message.member.voiceChannel.join().then(function(connection) {
+            play(connection, message);
+          });
+        }
+        console.log(results);
+      })
+      .catch((error) => {
+        message.channel.send('Cannot find this song try another one');
       });
-    }
   }
   if (cmd == 'stop') {
     let server = servers[message.guild.id];

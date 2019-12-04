@@ -22,11 +22,14 @@
     "express": "^4.17.1",
     "ffmpeg": "0.0.4",
     "ffmpeg-binaries": "^4.0.0",
+    "google-auth-library": "^5.5.1",
+    "googleapis": "^45.0.0",
     "keys": "^0.1.2",
     "mongoose": "^5.7.13",
     "node-spotify-api": "^1.1.1",
     "opusscript": "0.0.7",
     "spotify-web-api-node": "^4.0.0",
+    "youtube-search-promise": "^1.0.3",
     "ytdl-core": "^1.0.3"
   }
 }
