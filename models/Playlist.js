@@ -8,8 +8,9 @@ const PlaylistSchema = mongoose.Schema({
   },
   songs: {
     type: Array,
-    items: {
-      type: Song
+    url: {
+      type: String,
+      require: true
     }
   }
 });
