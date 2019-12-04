@@ -1,18 +1,12 @@
-const mongoose = require('mongoose');
-const Playlist = require('./Playlist');
+// const mongoose = require('mongoose');
+// const Favourites = require('./Favourite');
 
-const ServerSchema = mongoose.Schema({
-  serverID: {
-    type: String,
-    require: true
-  },
+// const ServerSchema = mongoose.Schema({
+//   serverID: {
+//     type: String,
+//     require: true
+//   },
+ 
+// });
 
-  playlists: {
-    type: Array,
-    items: {
-      type: Playlist
-    }
-  }
-});
-
-module.exports = mongoose.model('Server', ServerSchema);
+// module.exports = mongoose.model('Server', ServerSchema);
