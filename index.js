@@ -7,7 +7,7 @@ const ytdl = require('ytdl-core');
 const Spotify = require('node-spotify-api');
 const keys = require('./keys.js');
 const search = require('youtube-search-promise');
-const Server = require('./models/Server');
+
 const Favourite = require('./models/Favourite');
 const FavID = 0;
 
@@ -166,6 +166,7 @@ if (cmd == 'showfav'){
           SongTemp.splice(i, 1);
         }
       }
+      message.channel.send('Song ' +searchTerm+ ' has been removed from your Favourites' );
       Favourite.findByIdAndUpdate(
         message.guild.id,
         { songs: SongTemp },
