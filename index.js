@@ -1,4 +1,3 @@
-
 const express = require('express');
 
 const mongoose = require('mongoose');
@@ -8,10 +7,9 @@ const ytdl = require('ytdl-core');
 const Spotify = require('node-spotify-api');
 const keys = require('./keys.js');
 const search = require('youtube-search-promise');
-const Server =require('./models/Server');
-const Favourite =require('./models/Favourite');
-const FavID=0;
-
+const Server = require('./models/Server');
+const Favourite = require('./models/Favourite');
+const FavID = 0;
 
 const bot = new Client();
 const app = express();
@@ -139,41 +137,54 @@ bot.on('message', async (message) => {
       });
   }
 
-  if (cmd == 'editfav'){
-    if (Favourite.findOne(message.guild.id)){
-      const andrew= await Favourite.findById(message.guild.id)
-      let SongTemp= andrew.songs;
-      for (var i=0;i<SongTemp.length;i++){
-        if (i===parseInt(searchTerm)){
-          SongTemp.splice(i,1);
+  if (cmd == 'editfav') {
+    if (Favourite.findOne(message.guild.id)) {
+      const andrew = await Favourite.findById(message.guild.id);
+      let SongTemp = andrew.songs;
+      for (var i = 0; i < SongTemp.length; i++) {
+        if (i === parseInt(searchTerm)) {
+          SongTemp.splice(i, 1);
         }
       }
-      Favourite.findByIdAndUpdate(message.guild.id,{songs:SongTemp}, { new: true }, (err, model) => {
-        if (!err) {   
-        } else {
-          return response.json({ error: `Error, couldn't update a user given the following data` })
+      Favourite.findByIdAndUpdate(
+        message.guild.id,
+        { songs: SongTemp },
+        { new: true },
+        (err, model) => {
+          if (!err) {
+          } else {
+            return response.json({
+              error: `Error, couldn't update a user given the following data`
+            });
+          }
         }
-    })
-    }else{
+      );
+    } else {
       message.channel.send('You dont have a fav');
-  }
+    }
   }
 
-  if (cmd == 'deletefav'){
-    if (Favourite.findOne(message.guild.id))
-    {
-      Favourite.findByIdAndUpdate(message.guild.id,{songs:null}, { new: true }, (err, model) => {
-        if (!err) {   
-        } else {
-          return response.json({ error: `Error, couldn't update a user given the following data` })
+  if (cmd == 'deletefav') {
+    if (Favourite.findOne(message.guild.id)) {
+      Favourite.findByIdAndUpdate(
+        message.guild.id,
+        { songs: null },
+        { new: true },
+        (err, model) => {
+          if (!err) {
+          } else {
+            return response.json({
+              error: `Error, couldn't update a user given the following data`
+            });
+          }
         }
-    })
-    }else{
+      );
+    } else {
       message.channel.send('You dont have a fav');
-  }
+    }
   }
 
-  if (cmd=='fav') {
+  if (cmd == 'fav') {
     function play(connection, message) {
       //function to play song
       var server = servers[message.guild.id];
@@ -189,55 +200,54 @@ bot.on('message', async (message) => {
         }
       });
     }
-    if (!message.member.voiceChannel) {
-      const msg = await message.channel.send(
-        'You must be in a voice channel!!'
-      );
-      return;
-    }
-    if (!servers[message.guild.id]) {
-      servers[message.guild.id] = { queue: [] };
-    }
+  }
+  if (!servers[message.guild.id]) {
+    servers[message.guild.id] = { queue: [] };
+  }
 
-    var opts = {
-      maxResults: 1,
-      key: process.env.KEY
-    };
-    search(searchTerm, opts)
-      .then(async(results) => {
-        let song = results[0].link;
-        
-        if (Favourite.findOne(message.guild.id)){
-        
-           const andrew= await Favourite.findById(message.guild.id)
-          const SongTemp= andrew.songs;
-          SongTemp.push({url:results[0].link,name:results[0].title});
-          Favourite.findByIdAndUpdate(message.guild.id,{songs:SongTemp}, { new: true }, (err, model) => {
+  var opts = {
+    maxResults: 1,
+    key: process.env.KEY
+  };
+  search(searchTerm, opts)
+    .then(async (results) => {
+      let song = results[0].link;
+      const serverExists = await Favourite.findById(message.guild.id);
+      console.log(serverExists);
+      if (serverExists) {
+        const andrew = await Favourite.findById(message.guild.id);
+        const SongTemp = andrew.songs;
+        SongTemp.push({ url: results[0].link, name: results[0].title });
+        Favourite.findByIdAndUpdate(
+          message.guild.id,
+          { songs: SongTemp },
+          { new: true },
+          (err, model) => {
             if (!err) {
-              
             } else {
-              return response.json({ error: `Error, couldn't update a user given the following data` })
+              return response.json({
+                error: `Error, couldn't update a user given the following data`
+              });
             }
-        })
-        }else{
-         
+          }
+        );
+      } else {
         Favourite.create({
-          _id:message.guild.id,
-          songs:[{url:song,name:results[0].title}]
-        })
+          _id: message.guild.id,
+          songs: [{ url: song, name: results[0].title }]
+        });
       }
 
-        if (!message.guild.voiceConnection) {
-          //to make bot join the voice channel
-          message.member.voiceChannel.join().then(function(connection) {
-            play(connection, message);
-          });
-        }
-      })
-      .catch((error) => {
-        message.channel.send('Cannot find this song try another one');
-      });
-  }
+      if (!message.guild.voiceConnection) {
+        //to make bot join the voice channel
+        message.member.voiceChannel.join().then(function(connection) {
+          play(connection, message);
+        });
+      }
+    })
+    .catch((error) => {
+      message.channel.send('Cannot find this song try another one' + error);
+    });
 });
 
 bot.login(process.env.TOKEN);
