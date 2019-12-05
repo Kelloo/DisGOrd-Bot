@@ -166,40 +166,25 @@ bot.on('message', async (message) => {
 
   if (cmd == 'deletefav') {
     if (Favourite.findOne(message.guild.id)) {
-      Favourite.findByIdAndUpdate(
-        message.guild.id,
-        { songs: null },
-        { new: true },
-        (err, model) => {
-          if (!err) {
-          } else {
-            return response.json({
-              error: `Error, couldn't update a user given the following data`
-            });
-          }
+      const andrew =  Favourite
+      let SongTemp = andrew.songs;
+      
+      Favourite.findByIdAndDelete(message.guild.id, (err, model) => {
+        if (err) {
+        
+       message.channel.send("error happend")
+        }else{
+          message.channel.send("Favourite Playlist is deleted Successfully")
         }
-      );
+      })
     } else {
       message.channel.send('You dont have a fav');
     }
   }
 
   if (cmd == 'fav') {
-    function play(connection, message) {
-      //function to play song
-      var server = servers[message.guild.id];
-      server.dispatcher = connection.playStream(
-        ytdl(server.queue[0], { filter: 'audioonly' })
-      );
-      server.queue.shift();
-      server.dispatcher.on('end', function() {
-        if (server.queue[0]) {
-          play(connection, message);
-        } else {
-          connection.disconnect();
-        }
-      });
-    }
+   
+   
     if (!servers[message.guild.id]) {
       servers[message.guild.id] = { queue: [] };
     }
@@ -212,10 +197,15 @@ bot.on('message', async (message) => {
       .then(async (results) => {
         let song = results[0].link;
         const serverExists = await Favourite.findById(message.guild.id);
-        console.log(serverExists);
         if (serverExists) {
           const andrew = await Favourite.findById(message.guild.id);
-          const SongTemp = andrew.songs;
+          const SongTemp =await andrew.songs;
+          var songTempUrl=[];
+          for (var i = 0; i < SongTemp.length; i++) {
+              songTempUrl[i]=SongTemp[i].url;
+          }
+           const mwgood = songTempUrl.includes(results[0].link);
+          if (!mwgood) {
           SongTemp.push({ url: results[0].link, name: results[0].title });
           Favourite.findByIdAndUpdate(
             message.guild.id,
@@ -223,6 +213,7 @@ bot.on('message', async (message) => {
             { new: true },
             (err, model) => {
               if (!err) {
+                message.channel.send(searchTerm +" is added to favourites");
               } else {
                 return response.json({
                   error: `Error, couldn't update a user given the following data`
@@ -230,18 +221,17 @@ bot.on('message', async (message) => {
               }
             }
           );
+          
+          } else {
+           message.channel.send("this song is already added to favourites");
+          }
+      
         } else {
           Favourite.create({
             _id: message.guild.id,
             songs: [{ url: song, name: results[0].title }]
           });
-        }
-
-        if (!message.guild.voiceConnection) {
-          //to make bot join the voice channel
-          message.member.voiceChannel.join().then(function(connection) {
-            play(connection, message);
-          });
+          message.channel.send(searchTerm +" is added to favourites");
         }
       })
       .catch((error) => {
