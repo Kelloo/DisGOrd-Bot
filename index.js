@@ -94,6 +94,8 @@ bot.on('message', async (message) => {
         let song = results[0].link;
         var server = servers[message.guild.id];
         server.queue.push(song);
+        message.channel.send("playing " +searchTerm)
+   
 
         if (!message.guild.voiceConnection) {
           //to make bot join the voice channel
@@ -108,6 +110,7 @@ bot.on('message', async (message) => {
       });
   }
   if (cmd == 'stop') {
+    message.channel.send("your songs has been stoped")
     let server = servers[message.guild.id];
     if (message.guild.voiceConnection) {
       for (let i = server.queue.length - 1; i >= 0; i--) {
@@ -118,6 +121,8 @@ bot.on('message', async (message) => {
     if (message.guild.connection) message.guild.voiceConnection.disconnect();
   }
   if (cmd == 'skip') {
+    message.channel.send("The current song has been skipped")
+   
     let server = servers[message.guild.id];
     if (server.dispatcher) server.dispatcher.end();
   }
