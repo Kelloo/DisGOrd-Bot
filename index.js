@@ -159,6 +159,55 @@ if (cmd == 'showfav'){
   }
 }
 
+if (cmd =='playfav'){
+  function play(connection,message){//function to play song
+    var server = servers[message.guild.id];
+    server.dispatcher = connection.playStream(ytdl(server.queue[0], {filter:"audioonly"}));
+    server.queue.shift();
+    server.dispatcher.on("end",function(){
+      if(server.queue[0]){
+        play(connection,message);
+      }else{
+        connection.disconnect();
+      }
+    })
+
+  }
+  if(!message.member.voiceChannel){
+    const msg = await message.channel.send("You must be in a voice channel!!");
+    return;
+  }
+  if(!servers[message.guild.id]){
+    servers[message.guild.id] = {queue:[]};
+  }
+  var server = servers[message.guild.id];
+
+  if (Favourite.findOne(message.guild.id)) {
+      const andrew = await Favourite.findById(message.guild.id);
+      if (andrew===null){
+        message.channel.send("sorry you dont have favourites yet :( ")
+      }else{
+      const SongTemp =await andrew.songs;
+      var songTempUrl=[];
+      for (var i = 0; i < SongTemp.length; i++) {
+          songTempUrl[i]=SongTemp[i].url;
+      }
+      for (var i = 0; i < SongTemp.length; i++) {
+        server.queue.push(songTempUrl[i]);
+      }
+      message.channel.send("playing favourites");
+    }
+    } else {
+      message.channel.send('You dont have a fav');
+    }
+
+  if(!message.guild.voiceConnection){//to make bot join the voice channel
+    message.member.voiceChannel.join().then(function(connection){
+      play(connection,message);
+    })
+  }
+}
+
   if (cmd == 'editfav') {
     if (Favourite.findOne(message.guild.id)) {
       const andrew = await Favourite.findById(message.guild.id);
