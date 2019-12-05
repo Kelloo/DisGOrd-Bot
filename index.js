@@ -200,54 +200,54 @@ bot.on('message', async (message) => {
         }
       });
     }
-  }
-  if (!servers[message.guild.id]) {
-    servers[message.guild.id] = { queue: [] };
-  }
+    if (!servers[message.guild.id]) {
+      servers[message.guild.id] = { queue: [] };
+    }
 
-  var opts = {
-    maxResults: 1,
-    key: process.env.KEY
-  };
-  search(searchTerm, opts)
-    .then(async (results) => {
-      let song = results[0].link;
-      const serverExists = await Favourite.findById(message.guild.id);
-      console.log(serverExists);
-      if (serverExists) {
-        const andrew = await Favourite.findById(message.guild.id);
-        const SongTemp = andrew.songs;
-        SongTemp.push({ url: results[0].link, name: results[0].title });
-        Favourite.findByIdAndUpdate(
-          message.guild.id,
-          { songs: SongTemp },
-          { new: true },
-          (err, model) => {
-            if (!err) {
-            } else {
-              return response.json({
-                error: `Error, couldn't update a user given the following data`
-              });
+    var opts = {
+      maxResults: 1,
+      key: process.env.KEY
+    };
+    search(searchTerm, opts)
+      .then(async (results) => {
+        let song = results[0].link;
+        const serverExists = await Favourite.findById(message.guild.id);
+        console.log(serverExists);
+        if (serverExists) {
+          const andrew = await Favourite.findById(message.guild.id);
+          const SongTemp = andrew.songs;
+          SongTemp.push({ url: results[0].link, name: results[0].title });
+          Favourite.findByIdAndUpdate(
+            message.guild.id,
+            { songs: SongTemp },
+            { new: true },
+            (err, model) => {
+              if (!err) {
+              } else {
+                return response.json({
+                  error: `Error, couldn't update a user given the following data`
+                });
+              }
             }
-          }
-        );
-      } else {
-        Favourite.create({
-          _id: message.guild.id,
-          songs: [{ url: song, name: results[0].title }]
-        });
-      }
+          );
+        } else {
+          Favourite.create({
+            _id: message.guild.id,
+            songs: [{ url: song, name: results[0].title }]
+          });
+        }
 
-      if (!message.guild.voiceConnection) {
-        //to make bot join the voice channel
-        message.member.voiceChannel.join().then(function(connection) {
-          play(connection, message);
-        });
-      }
-    })
-    .catch((error) => {
-      message.channel.send('Cannot find this song try another one' + error);
-    });
+        if (!message.guild.voiceConnection) {
+          //to make bot join the voice channel
+          message.member.voiceChannel.join().then(function(connection) {
+            play(connection, message);
+          });
+        }
+      })
+      .catch((error) => {
+        message.channel.send('Cannot find this song try another one' + error);
+      });
+  }
 });
 
 bot.login(process.env.TOKEN);
