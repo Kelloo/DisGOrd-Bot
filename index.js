@@ -137,9 +137,29 @@ bot.on('message', async (message) => {
       });
   }
 
+if (cmd == 'showfav'){
+  if (Favourite.findOne(message.guild.id)) {
+    const andrew = await Favourite.findById(message.guild.id);
+    if (andrew===null){
+      message.channel.send("sorry you dont have favourites yet :( ")
+    }else{
+    let SongTemp = andrew.songs;
+   
+    for (var i = 0; i < SongTemp.length; i++) {
+       message.channel.send(SongTemp[i].name)
+    }
+  }
+  } else {
+    message.channel.send('You dont have a fav yet !!');
+  }
+}
+
   if (cmd == 'editfav') {
     if (Favourite.findOne(message.guild.id)) {
       const andrew = await Favourite.findById(message.guild.id);
+      if (andrew===null){
+        message.channel.send("sorry you dont have favourites yet :( ")
+      }else{
       let SongTemp = andrew.songs;
       for (var i = 0; i < SongTemp.length; i++) {
         if (i === parseInt(searchTerm)) {
@@ -153,12 +173,10 @@ bot.on('message', async (message) => {
         (err, model) => {
           if (!err) {
           } else {
-            return response.json({
-              error: `Error, couldn't update a user given the following data`
-            });
           }
         }
       );
+    }
     } else {
       message.channel.send('You dont have a fav');
     }
@@ -167,6 +185,9 @@ bot.on('message', async (message) => {
   if (cmd == 'deletefav') {
     if (Favourite.findOne(message.guild.id)) {
       const andrew =  Favourite
+      if (andrew===null){
+        message.channel.send("sorry you dont have favourites yet :( ")
+      }else{
       let SongTemp = andrew.songs;
       
       Favourite.findByIdAndDelete(message.guild.id, (err, model) => {
@@ -177,18 +198,16 @@ bot.on('message', async (message) => {
           message.channel.send("Favourite Playlist is deleted Successfully")
         }
       })
+    }
     } else {
       message.channel.send('You dont have a fav');
     }
   }
 
   if (cmd == 'fav') {
-   
-   
     if (!servers[message.guild.id]) {
       servers[message.guild.id] = { queue: [] };
     }
-
     var opts = {
       maxResults: 1,
       key: process.env.KEY
@@ -239,5 +258,4 @@ bot.on('message', async (message) => {
       });
   }
 });
-
 bot.login(process.env.TOKEN);
