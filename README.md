@@ -15,4 +15,4 @@ DisGOrd-Bot uses typed commands to function. the command prefix is an exclamatio
 * !showfav: displays your favourites playlist
 * !editfav [number of song in fav]: removes the song from favourites in this position
 * !deletefav: clears your favourites playlist
-* search [songName]: gets you information about this song
+* !search [songName]: gets you information about this song
