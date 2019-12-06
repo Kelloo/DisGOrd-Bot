@@ -26,6 +26,7 @@ const spotify = new Spotify(keys.spotify);
 
 bot.on('ready', () => {
   console.log(`I'm Online and my name is ${bot.user.username}`);
+  console.log('Connecting to DB');
 
   bot.user.setPresence({
     status: 'online',
