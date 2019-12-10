@@ -33,3 +33,12 @@ ___
     "ytdl-core": "^1.0.3"       // youtube downloader
   }
   ```
+___
+### .env Example
+```
+TOKEN= 'TOKEN_STRING'
+SPOTIFY_ID='STRING'
+SPOTIFY_SECRET= 'STRING'
+KEY= 'KEY_STRING'
+DB_CONNECTION= 'mongodb+srv://<userName>:<password>@<DB_LINK>'
+```
